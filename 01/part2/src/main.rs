@@ -1,5 +1,4 @@
 use std::fs::read_to_string;
-use std::str;
 
 fn check_for_number(slice: &str) -> Option<u32> {
     let first_char = slice.chars().next().expect("string was empty");
