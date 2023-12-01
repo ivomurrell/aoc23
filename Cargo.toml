@@ -1,2 +1,3 @@
 [workspace]
 members = ["[0-2][0-9]/part[1-2]"]
+resolver = "2"
