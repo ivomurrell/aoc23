@@ -1,5 +1,8 @@
 use std::{cmp::Ordering, collections::HashSet, fs::read_to_string};
 
+#[cfg(feature = "visualise")]
+use colored::*;
+
 type Coord = (usize, usize);
 
 fn north((x, y): Coord) -> Coord {
@@ -99,6 +102,24 @@ fn main() {
                 }
             }
         });
+
+    #[cfg(feature = "visualise")]
+    for (y, line) in grid.iter().enumerate() {
+        for (x, tile) in line.iter().enumerate() {
+            let tile = tile.to_string();
+            let coloured_tile = if start_coord == (x, y) {
+                tile.bright_black().bold().italic()
+            } else if pipe_loop.contains(&(x, y)) {
+                tile.bright_black()
+            } else if enclosed_tiles.contains(&(x, y)) {
+                tile.red()
+            } else {
+                tile.normal()
+            };
+            print!("{coloured_tile}");
+        }
+        println!();
+    }
 
     let enclosed_count = enclosed_tiles.len();
     println!("The number of tiles enclosed by the loop is {enclosed_count}!")
