@@ -84,17 +84,17 @@ fn main() {
         .windows(2)
         .map(|window| (window[0], window[1]))
         .map(|(prev @ (prev_x, prev_y), current @ (curr_x, curr_y))| {
-            let direction = match (prev_x.cmp(&curr_x), prev_y.cmp(&curr_y)) {
-                (Ordering::Equal, Ordering::Greater) => |(x, y)| (x + 1, y),
-                (Ordering::Less, Ordering::Equal) => |(x, y)| (x, y + 1),
-                (Ordering::Equal, Ordering::Less) => |(x, y)| (x - 1, y),
-                (Ordering::Greater, Ordering::Equal) => |(x, y)| (x, y - 1),
+            let search_direction = match (prev_x.cmp(&curr_x), prev_y.cmp(&curr_y)) {
+                (Ordering::Equal, Ordering::Greater) => east,
+                (Ordering::Less, Ordering::Equal) => south,
+                (Ordering::Equal, Ordering::Less) => west,
+                (Ordering::Greater, Ordering::Equal) => north,
                 _ => panic!("unexpected direction"),
             };
-            (prev, current, direction)
+            ([prev, current], search_direction)
         })
-        .for_each(|(prev, current, direction)| {
-            for start in [prev, current] {
+        .for_each(|(start_tiles, direction)| {
+            for start in start_tiles {
                 let mut tile = direction(start);
                 while !pipe_loop.contains(&tile) {
                     enclosed_tiles.insert(tile);
