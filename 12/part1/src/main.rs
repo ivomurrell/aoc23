@@ -21,21 +21,20 @@ fn main() {
                 .map(|damaged_guess| {
                     let mut row_guess = damaged.clone();
                     row_guess.extend(damaged_guess);
-                    let mut guessed_groups = Vec::new();
-                    let mut prev_spring = 0;
-                    let mut current_group = 0;
-                    for spring in row_guess {
-                        if spring != prev_spring + 1 && current_group != 0 {
-                            guessed_groups.push(current_group);
-                            current_group = 0;
-                        }
-                        current_group += 1;
-                        prev_spring = spring;
-                    }
-                    guessed_groups.push(current_group);
-                    guessed_groups
+                    row_guess
+                        .into_iter()
+                        .map(|spring| (spring, 1))
+                        .coalesce(|prev, current| {
+                            if current.0 == prev.0 + 1 {
+                                Ok((current.0, prev.1 + 1))
+                            } else {
+                                Err((prev, current))
+                            }
+                        })
+                        .map(|(_, count)| count)
+                        .collect()
                 })
-                .filter(|guess| guess == &groups)
+                .filter(|guess: &Vec<_>| guess == &groups)
                 .count()
         })
         .sum();
